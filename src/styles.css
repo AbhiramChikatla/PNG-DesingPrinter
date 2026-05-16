@@ -1,0 +1,104 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap');
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-panel: var(--panel);
+  --color-editor: var(--editor);
+  --color-preview: var(--preview);
+  --color-amber-accent: var(--amber-accent);
+  --color-amber-glow: var(--amber-glow);
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+:root {
+  --radius: 0.875rem;
+  --background: oklch(0.16 0.012 280);
+  --foreground: oklch(0.94 0.005 280);
+  --card: oklch(0.20 0.012 280);
+  --card-foreground: oklch(0.94 0.005 280);
+  --popover: oklch(0.20 0.012 280);
+  --popover-foreground: oklch(0.94 0.005 280);
+  --primary: oklch(0.78 0.16 75);
+  --primary-foreground: oklch(0.18 0.02 60);
+  --secondary: oklch(0.24 0.012 280);
+  --secondary-foreground: oklch(0.94 0.005 280);
+  --muted: oklch(0.24 0.012 280);
+  --muted-foreground: oklch(0.65 0.01 280);
+  --accent: oklch(0.78 0.16 75);
+  --accent-foreground: oklch(0.18 0.02 60);
+  --destructive: oklch(0.6 0.2 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(1 0 0 / 8%);
+  --input: oklch(1 0 0 / 10%);
+  --ring: oklch(0.78 0.16 75);
+  --panel: oklch(0.21 0.012 280);
+  --editor: oklch(0.17 0.015 275);
+  --preview: oklch(0.23 0.014 280);
+  --amber-accent: oklch(0.80 0.17 75);
+  --amber-glow: oklch(0.80 0.17 75 / 40%);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+}
+
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.animated-gradient-border {
+  background: linear-gradient(90deg, transparent, var(--amber-accent), transparent, var(--amber-accent), transparent);
+  background-size: 200% 100%;
+  animation: gradient-shift 6s ease-in-out infinite;
+}
+
+@keyframes shimmer-flash {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.shimmer-flash {
+  animation: shimmer-flash 300ms ease-out;
+}
+
+@keyframes radial-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.05); }
+}
+.radial-glow {
+  animation: radial-pulse 8s ease-in-out infinite;
+}
