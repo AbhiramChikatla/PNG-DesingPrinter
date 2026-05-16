@@ -60,6 +60,35 @@ const EXPORT_SIZES: { key: string; label: string; scale: number }[] = [
   { key: "4x", label: "Ultra (4×)",    scale: 24 },
 ];
 
+type Placement = { horizontal: number; vertical: number };
+
+const SHIRT_COLOR_PLACEMENTS: Record<string, Placement> = {
+  white: { horizontal: 50, vertical: 50 },
+  black: { horizontal: 50, vertical: 50 },
+  navy: { horizontal: 50, vertical: 50 },
+  heather: { horizontal: 50, vertical: 50 },
+  sand: { horizontal: 50, vertical: 50 },
+  olive: { horizontal: 50, vertical: 50 },
+  burgundy: { horizontal: 50, vertical: 50 },
+  pink: { horizontal: 50, vertical: 50 },
+};
+
+const EXPORT_SIZE_PLACEMENT_OFFSETS: Record<string, Placement> = {
+  "1x": { horizontal: 0, vertical: 0 },
+  "2x": { horizontal: 0, vertical: 0 },
+  "4x": { horizontal: 0, vertical: 0 },
+};
+
+function getRecommendedPlacement(tshirtColorKey: string, exportSizeKey: string): Placement {
+  const base = SHIRT_COLOR_PLACEMENTS[tshirtColorKey] ?? SHIRT_COLOR_PLACEMENTS.white;
+  const offset = EXPORT_SIZE_PLACEMENT_OFFSETS[exportSizeKey] ?? EXPORT_SIZE_PLACEMENT_OFFSETS["2x"];
+
+  return {
+    horizontal: base.horizontal + offset.horizontal,
+    vertical: base.vertical + offset.vertical,
+  };
+}
+
 const THEMES: Record<ThemeKey, ThemeDef> = {
   classic:        { keyword: "#8B0000", string: "#2E8B57", comment: "#2E8B57", yieldKw: "#E05252", def: "#2C2C2C", label: "Classic Python",     bg: "#FFFFFF" },
   mono:           { keyword: "#1A1A1A", string: "#1A1A1A", comment: "#1A1A1A", yieldKw: "#1A1A1A", def: "#1A1A1A", label: "Monochrome",         bg: "#FFFFFF" },
@@ -168,6 +197,10 @@ export default function PatternPress() {
     : THEMES[themeKey];
   const tshirtColor = TSHIRT_COLORS.find(c => c.key === tshirtColorKey)?.hex || "#FFFFFF";
   const exportScale = EXPORT_SIZES.find(s => s.key === exportSizeKey)?.scale || 12;
+  const recommendedPlacement = useMemo(
+    () => getRecommendedPlacement(tshirtColorKey, exportSizeKey),
+    [tshirtColorKey, exportSizeKey],
+  );
 
   const highlighted = useMemo(() => highlightLines(code, theme), [code, theme]);
   const editorHighlighted = useMemo(() => highlightLines(code, THEMES.classic), [code]);
@@ -197,6 +230,11 @@ export default function PatternPress() {
     setExportSizeKey("2x");
     setHorizontalPos(50);
     setVerticalPos(42);
+  };
+
+  const autoCenter = () => {
+    setHorizontalPos(recommendedPlacement.horizontal);
+    setVerticalPos(recommendedPlacement.vertical);
   };
 
   const renderCodeToCanvas = useCallback((scale: number) => {
@@ -598,6 +636,26 @@ export default function PatternPress() {
                 </div>
                 <div className="text-xs text-muted-foreground mt-2">
                   {TSHIRT_COLORS.find(c => c.key === tshirtColorKey)?.label}
+                </div>
+              </div>
+            )}
+
+            {/* Auto-center (only when mockup mode) */}
+            {mockupMode && (
+              <div className="rounded-xl border border-border bg-card p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <label className="text-sm font-medium block">Auto-Center</label>
+                    <span className="text-xs text-muted-foreground font-mono">
+                      {recommendedPlacement.horizontal}% / {recommendedPlacement.vertical}%
+                    </span>
+                  </div>
+                  <button
+                    onClick={autoCenter}
+                    className="px-4 py-2 rounded-lg text-sm font-semibold transition-all border border-amber-accent/40 bg-amber-accent/15 text-amber-accent hover:bg-amber-accent/25"
+                  >
+                    Apply
+                  </button>
                 </div>
               </div>
             )}
