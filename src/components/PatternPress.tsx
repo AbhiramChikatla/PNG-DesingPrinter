@@ -156,6 +156,7 @@ export default function PatternPress() {
   const [mockupMode, setMockupMode] = useState(false);
   const [tshirtColorKey, setTshirtColorKey] = useState<string>("white");
   const [exportSizeKey, setExportSizeKey] = useState<string>("2x");
+  const [horizontalPos, setHorizontalPos] = useState<number>(50);
   const [verticalPos, setVerticalPos] = useState<number>(42);
   const [downloading, setDownloading] = useState(false);
   const [downloaded, setDownloaded] = useState(false);
@@ -194,6 +195,7 @@ export default function PatternPress() {
     setMockupMode(false);
     setTshirtColorKey("white");
     setExportSizeKey("2x");
+    setHorizontalPos(50);
     setVerticalPos(42);
   };
 
@@ -276,7 +278,7 @@ export default function PatternPress() {
         const ratio = Math.min(maxW / codeCanvas.width, maxH / codeCanvas.height);
         const drawW = codeCanvas.width * ratio;
         const drawH = codeCanvas.height * ratio;
-        const cx = (W - drawW) / 2;
+        const cx = W * (horizontalPos / 100) - drawW / 2;
         const cy = H * (verticalPos / 100) - drawH / 2;
         ctx.drawImage(codeCanvas, cx, cy, drawW, drawH);
 
@@ -313,7 +315,7 @@ export default function PatternPress() {
     } finally {
       setDownloading(false);
     }
-  }, [mockupMode, transparentBg, renderCodeToCanvas, theme, tshirtColor, exportScale, exportSizeKey, verticalPos]);
+  }, [mockupMode, transparentBg, renderCodeToCanvas, theme, tshirtColor, exportScale, exportSizeKey, horizontalPos, verticalPos]);
 
   const lineCount = code.split("\n").length;
 
@@ -396,7 +398,7 @@ export default function PatternPress() {
                 key={flashKey}
                 className="absolute shimmer-flash pointer-events-none flex items-center justify-center"
                 style={{
-                  left: "50%",
+                  left: `${horizontalPos}%`,
                   top: `${verticalPos}%`,
                   transform: "translate(-50%, -50%)",
                   width: "40%",
@@ -596,6 +598,30 @@ export default function PatternPress() {
                 </div>
                 <div className="text-xs text-muted-foreground mt-2">
                   {TSHIRT_COLORS.find(c => c.key === tshirtColorKey)?.label}
+                </div>
+              </div>
+            )}
+
+            {/* Horizontal Position (only when mockup mode) */}
+            {mockupMode && (
+              <div className="rounded-xl border border-border bg-card p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <label className="text-sm font-medium">Horizontal Position</label>
+                  <span className="text-xs font-mono px-2 py-0.5 rounded bg-amber-accent/15 text-amber-accent border border-amber-accent/30">
+                    {horizontalPos}%
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={20}
+                  max={80}
+                  value={horizontalPos}
+                  onChange={(e) => setHorizontalPos(Number(e.target.value))}
+                  className="w-full"
+                  style={{ accentColor: "#F5A623" }}
+                />
+                <div className="flex justify-between text-[10px] text-muted-foreground mt-1">
+                  <span>Left</span><span>Center</span><span>Right</span>
                 </div>
               </div>
             )}
