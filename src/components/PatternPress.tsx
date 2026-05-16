@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import tshirtImg from "@/assets/white-tshirt.webp";
+import blackTshirtImg from "@/assets/ChatGPT Image May 16, 2026, 11_43_55 PM.png";
+import navyTshirtImg from "@/assets/ChatGPT Image May 16, 2026, 11_46_41 PM.png";
+import heatherTshirtImg from "@/assets/ChatGPT Image May 16, 2026, 11_48_26 PM.png";
+import sandTshirtImg from "@/assets/ChatGPT Image May 16, 2026, 11_50_13 PM.png";
+import burgundyTshirtImg from "@/assets/ChatGPT Image May 16, 2026, 11_51_00 PM.png";
+import pinkTshirtImg from "@/assets/ChatGPT Image May 16, 2026, 11_51_53 PM.png";
+import whiteTshirtImg from "@/assets/white-tshirt.webp";
 
 
 const DEFAULT_CODE = `import ibtisam as mom
@@ -53,6 +59,17 @@ const TSHIRT_COLORS: { key: string; label: string; hex: string }[] = [
   { key: "burgundy",label: "Burgundy",     hex: "#6B1F2E" },
   { key: "pink",    label: "Dusty Pink",   hex: "#E8B4BC" },
 ];
+
+const TSHIRT_IMAGES: Record<string, string> = {
+  white: whiteTshirtImg,
+  black: blackTshirtImg,
+  navy: navyTshirtImg,
+  heather: heatherTshirtImg,
+  sand: sandTshirtImg,
+  olive: sandTshirtImg,
+  burgundy: burgundyTshirtImg,
+  pink: pinkTshirtImg,
+};
 
 const EXPORT_SIZES: { key: string; label: string; scale: number }[] = [
   { key: "1x", label: "Standard (1×)", scale: 6 },
@@ -195,7 +212,7 @@ export default function PatternPress() {
   const theme: ThemeDef = themeKey === "custom"
     ? { ...customColors, label: "Custom" }
     : THEMES[themeKey];
-  const tshirtColor = TSHIRT_COLORS.find(c => c.key === tshirtColorKey)?.hex || "#FFFFFF";
+  const selectedTshirtImg = TSHIRT_IMAGES[tshirtColorKey] ?? whiteTshirtImg;
   const exportScale = EXPORT_SIZES.find(s => s.key === exportSizeKey)?.scale || 12;
   const recommendedPlacement = useMemo(
     () => getRecommendedPlacement(tshirtColorKey, exportSizeKey),
@@ -287,7 +304,7 @@ export default function PatternPress() {
     setDownloading(true);
     try {
       if (mockupMode) {
-        const tshirt = await loadImage(tshirtImg);
+        const tshirt = await loadImage(selectedTshirtImg);
         const upscale = exportScale / 6; // 1x→1, 2x→2, 4x→4
         const W = Math.round(tshirt.naturalWidth * upscale);
         const H = Math.round(tshirt.naturalHeight * upscale);
@@ -298,16 +315,7 @@ export default function PatternPress() {
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = "high";
 
-        // Draw t-shirt then tint with selected color (multiply blend, masked by shirt alpha)
         ctx.drawImage(tshirt, 0, 0, W, H);
-        if (tshirtColor.toUpperCase() !== "#FFFFFF") {
-          ctx.globalCompositeOperation = "multiply";
-          ctx.fillStyle = tshirtColor;
-          ctx.fillRect(0, 0, W, H);
-          ctx.globalCompositeOperation = "destination-in";
-          ctx.drawImage(tshirt, 0, 0, W, H);
-          ctx.globalCompositeOperation = "source-over";
-        }
 
         const codeCanvas = renderCodeToCanvas(exportScale);
         // Fit code into chest area (~40% width, max ~38% height)
@@ -353,7 +361,7 @@ export default function PatternPress() {
     } finally {
       setDownloading(false);
     }
-  }, [mockupMode, transparentBg, renderCodeToCanvas, theme, tshirtColor, exportScale, exportSizeKey, horizontalPos, verticalPos]);
+  }, [mockupMode, transparentBg, renderCodeToCanvas, theme, selectedTshirtImg, exportScale, exportSizeKey, horizontalPos, verticalPos]);
 
   const lineCount = code.split("\n").length;
 
@@ -397,36 +405,13 @@ export default function PatternPress() {
 
           {mockupMode ? (
             <div className="relative w-full max-w-md aspect-[4/5] flex items-center justify-center">
-              {/* Tinted t-shirt: colored layer behind, white shirt multiplied on top */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="relative w-full h-full">
                   <img
-                    src={tshirtImg}
+                    src={selectedTshirtImg}
                     alt="T-shirt mockup"
                     className="absolute inset-0 w-full h-full object-contain"
-                    style={{ filter: tshirtColor.toUpperCase() === "#FFFFFF" ? "none" : "none" }}
                   />
-                  {tshirtColor.toUpperCase() !== "#FFFFFF" && (
-                    <img
-                      src={tshirtImg}
-                      alt=""
-                      aria-hidden
-                      className="absolute inset-0 w-full h-full object-contain"
-                      style={{
-                        WebkitMaskImage: `url(${tshirtImg})`,
-                        maskImage: `url(${tshirtImg})`,
-                        WebkitMaskSize: "contain",
-                        maskSize: "contain",
-                        WebkitMaskRepeat: "no-repeat",
-                        maskRepeat: "no-repeat",
-                        WebkitMaskPosition: "center",
-                        maskPosition: "center",
-                        background: tshirtColor,
-                        mixBlendMode: "multiply",
-                        opacity: 0.92,
-                      }}
-                    />
-                  )}
                 </div>
               </div>
               <div
